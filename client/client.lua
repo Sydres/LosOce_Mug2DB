@@ -27,6 +27,9 @@ mysql> SELECT FROM_BASE64('YmFzZTY0IGVuY29kZWQgc3RyaW5n');
 Option 2
 Convert to string and upload string to db, then encode and decode during read/write from db.
 
+Option 3
+Save PNG file to Server then Send to DB as Blob.
+
 ------------------------------------------------------------------------------
 --	Functions																--
 ------------------------------------------------------------------------------
@@ -52,24 +55,29 @@ local retval --[[ string ]] =
 
 
 
-function Mugshot(str)
+function Mugshot()
 	local iPlayer = RegisterPedheadshot(GetPlayerPed-1)
-	if IsPedheadshotReady(iPlayer) then
-		if IsPedheadshotValid(iPlayer) then
-			local ImageStr = GetPedheadshotTxdString(iplayer)
-		else
-			UnregisterPedheadshot(iPlayer)
-		end
+	
+	while not IsPedheadshotReady(iPlayer) do
+		Wait(0)
+	end
+	
+	if IsPedheadshotValid(iPlayer) then
+		local ImageStr = GetPedheadshotTxdString(iplayer)
 	else
 		UnregisterPedheadshot(iPlayer)
 	end
+
 	UnregisterPedheadshot(iPlayer)
 end return ImageStr
 
 
+-- local ImageStr = Mugshot()
+
+
 -- Server Side --
 function MugToDB(cb)
-	local ImageStr = Mugshot(str)
+	local ImageStr = Mugshot()
 	if ImageStr ~= nil then
 		MySQL.Async.insert("UPDATE characters SET MugShot = @MugShot WHERE identifier = @identifier", {
 			['@MugShot'] = ImageStr,
