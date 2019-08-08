@@ -30,6 +30,25 @@ Convert to string and upload string to db, then encode and decode during read/wr
 Option 3
 Save PNG file to Server then Send to DB as Blob.
 
+
+
+TODO
+
+Server on event trigger
+
+Server > Tells Client to take PedMugShot as Callback.
+
+Client < Takes Mugshotas callback.
+
+Either:
+A) Draw the sprite and screenshot the image from client side like JS4.
+
+B) Take the PedMugshot String and Convert the 
+
+Server > Sends the CB data to the DB under Character Table in Longtext collumn OR as Json file as Steam:Identifier/
+
+
+
 ------------------------------------------------------------------------------
 --	Functions																--
 ------------------------------------------------------------------------------
@@ -71,22 +90,14 @@ function Mugshot()
 	UnregisterPedheadshot(iPlayer)
 end return ImageStr
 
+------------------------------------------------------------------------------
+--	Events																	--
+------------------------------------------------------------------------------
 
--- local ImageStr = Mugshot()
-
-
--- Server Side --
-function MugToDB(cb)
-	local ImageStr = Mugshot()
-	if ImageStr ~= nil then
-		MySQL.Async.insert("UPDATE characters SET MugShot = @MugShot WHERE identifier = @identifier", {
-			['@MugShot'] = ImageStr,
-			['@identifier'] = identifier
-		}, function ()
-			cb(ImageStr)
-		end)
-	end
-end
+RegisterServerEvent('Mugshot:SendMug')
+AddEventHandler('Mugshot:SendMug', function(cb)
+	cb = Mugshot()
+end)
 
 ------------------------------------------------------------------------------
 --	Threads																	--
